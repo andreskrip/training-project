@@ -1,0 +1,213 @@
+html,
+body {
+    height: 100%;
+}
+
+body {
+    font-family: monospace;
+    font-size: 18px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    padding: 10px 2%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: gray 1px solid;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: sans-serif;
+}
+
+h1 {
+    text-align: center;
+    background-color: #f7e7ce;
+}
+
+a {
+    text-decoration: none;
+    color: black;
+}
+
+a:hover {
+    background-color: darkseagreen;
+}
+
+textarea {
+    resize: vertical;
+}
+
+header nav {
+    display: flex;
+    justify-content: space-around;
+    width: 33.3%;
+}
+
+.layout {
+    margin: 0 2%;
+    flex: 1 0 auto;
+}
+
+.footer {
+    flex: 0 0 auto;
+    border-top: gray 1px solid;
+    text-align: center;
+    padding: 10px 0;
+    margin-top: 20px;
+}
+
+.title-header {
+    font-size: xx-large;
+    width: 33.3%;
+}
+
+.user-menu {
+    width: 33.3%;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.title-header a {
+    padding: 10px;
+}
+
+.title-header a:hover {
+    background-color: darkseagreen;
+}
+
+nav a {
+    padding: 10px;
+}
+
+nav a:hover {
+    background-color: darkseagreen;
+}
+
+.comment {
+    background-color: cornsilk;
+}
+
+.icon {
+    float: right;
+    text-decoration: none;
+}
+
+.comments {
+    margin-top: 20px;
+}
+
+.comment-author {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.user-menu * {
+    margin: 0;
+    padding: 0;
+}
+
+.user-menu ul,
+.user-menu ol {
+    list-style: none;
+}
+
+.user-menu > ul li {
+    position: relative;
+}
+
+.user-menu > ul li a {
+    display: block;
+    padding: 10px 0;
+}
+
+.user-menu li ul {
+    position: absolute;
+    min-width: 150px;
+    display: none;
+    right: 0;
+    top: 32px;
+}
+
+.user-menu li > ul li {
+    border-top: none;
+}
+
+.user-menu li > ul li a {
+    padding: 10px;
+    background: #c4c4c4;
+}
+
+.user-menu-checkbox {
+    display: none;
+}
+
+.user-menu-label {
+    -ms-user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: pointer;
+    padding: 10px;
+
+}
+
+.user-menu-label:hover {
+    background-color: #f4f4f5;
+}
+
+.user-menu-checkbox:checked ~ .user-menu-label {
+    background-color: #e4e4e5;
+}
+
+.user-menu-checkbox:checked ~ .list {
+    display: block;
+}
+
+.list li a:hover {
+    background-color: darkseagreen;
+}
+
+.greetings-block {
+    font-size: 1.3em;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.admin-table {
+    margin-top: 20px;
+}
+
+.admin-table tr td {
+    width: 50%;
+}
+
+.short-article, .last-comments {
+    margin: 0 10px;
+}
+
+.short-article:first-child {
+    margin-top: 20px;
+}
+
+.short-article:last-child hr {
+    display: none;
+}
+
+.button {
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #000000;
+    background-color: #e4e4e5;
+    border-radius: 2px 2px 2px 2px;
+    padding: 15px 35px 15px 35px;
+}
+
+.button:hover {
+    color: #ffffff;
+    background-color: darkseagreen;
+}
