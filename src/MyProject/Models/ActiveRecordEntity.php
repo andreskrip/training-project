@@ -126,11 +126,14 @@ abstract class ActiveRecordEntity implements \JsonSerializable
     //подготовка данных для добавления новой записи в таблицу бд
     private function insert(array $mappedProperties): void
     {
+        // фильтруем массив от null-значений, которые автоматически сгенерируются в бд
         $filterProperties = array_filter($mappedProperties);
+        // создаем пустые массивы для столбцов, их значений и бинд параметров PDO
         $columns = [];
         $values = [];
         $params = [];
 
+        // разбиваем свойства объектов на столбцы, значения и бинд-параметры
         foreach ($filterProperties as $column => $value) {
             $columns [] = '`' . $column . '`';
             $valueName = ':' . $column;
@@ -138,8 +141,11 @@ abstract class ActiveRecordEntity implements \JsonSerializable
             $params[$valueName] = $value;
         }
 
+        //  преваращаем массив столбцов и значений в список через запятую для SQL-запроса
         $columnsViaCommas = implode(', ', $columns);
         $valuesViaCommas = implode(', ', $values);
+
+        // формируем SQL-запрос
         $sql = 'INSERT INTO `' . static::getTableName() . '` (' . $columnsViaCommas . ') VALUES (' . $valuesViaCommas . ');';
         $db = Db::getInstance();
         $db->query($sql, $params, static::class);

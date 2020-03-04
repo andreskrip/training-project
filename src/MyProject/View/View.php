@@ -13,6 +13,7 @@ class View
         $this->templatesPath = $templatesPath;
     }
 
+    // передача дополнительных переменных в шаблон
     public function setVar(string $name, $value): void
     {
         $this->extraVars[$name] = $value;

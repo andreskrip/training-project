@@ -37,7 +37,7 @@ class Db
         return $sth->fetchAll(\PDO::FETCH_CLASS, $className);
     }
 
-    //singleton на подключения к бд
+    //применение singleton на подключения к бд
     public static function getInstance(): self
     {
         if (self::$instance === null) {
@@ -46,6 +46,7 @@ class Db
         return self::$instance;
     }
 
+    // получение id последней добавленной записи в бд
     public function getLastInsertId(): int
     {
         return (int)$this->pdo->lastInsertId();

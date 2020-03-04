@@ -16,7 +16,7 @@ return [
     '~^articles/(\d+)/?$~' => [\MyProject\Controllers\ArticlesController::class, 'view'],
     '~^articles/(\d+)/edit$~' => [\MyProject\Controllers\ArticlesController::class, 'edit'],
     '~^articles/(\d+)/delete$~' => [\MyProject\Controllers\ArticlesController::class, 'delete'],
-    //комменты
+    //комментарии
     '~^articles/(\d+)/comments$~' => [\MyProject\Controllers\ArticlesController::class, 'addComment'],
     '~^.*comments/(\d+)/edit$~' => [\MyProject\Controllers\ArticlesController::class, 'editComment'],
     '~^.*comments/(\d+)/delete$~' => [\MyProject\Controllers\ArticlesController::class, 'deleteComment'],
