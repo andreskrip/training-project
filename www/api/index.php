@@ -1,6 +1,8 @@
 <?php
+// подключение автозагрузки композера
 require __DIR__ . '/../../vendor/autoload.php';
 
+// настройка роутинга для API
 try {
     $route = $_GET['route'] ?? '';
     $routes = require __DIR__ . '/../../src/routesApi.php';
@@ -26,6 +28,7 @@ try {
 
     $controller = new $controllerName();
     $controller->$actionName(...$matches);
+
 } catch (\MyProject\Exceptions\DbException $e) {
     $view = new \MyProject\View\View(__DIR__ . '/../../templates/errors');
     $view->displayJson(['error' => $e->getMessage()], 500);
