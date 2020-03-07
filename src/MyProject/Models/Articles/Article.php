@@ -36,7 +36,8 @@ class Article extends ActiveRecordEntity
 
     public function getShortText(): string
     {
-        return mb_strimwidth($this->text, 0, 120);
+        $parser = new \Parsedown();
+        return $parser->text(mb_strimwidth($this->text, 0, 200));
     }
 
     public function setText(string $text): void
@@ -61,7 +62,7 @@ class Article extends ActiveRecordEntity
 
     public function getCreatedAt(): string
     {
-        return $this->createdAt;
+       return $this->getCorrectDateTime()->createdAt;
     }
 
     protected static function getTableName(): string

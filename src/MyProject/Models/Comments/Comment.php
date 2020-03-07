@@ -37,7 +37,7 @@ class Comment extends ActiveRecordEntity
 
     public function getCreatedAt(): string
     {
-        return $this->createdAt;
+        return $this->getCorrectDateTime()->createdAt;
     }
 
     public function setAuthor(User $user): void

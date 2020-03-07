@@ -49,7 +49,7 @@ class User extends ActiveRecordEntity
 
     public function getCreatedAt()
     {
-        return $this->createdAt;
+        return $this->getCorrectDateTime()->createdAt;
     }
 
     private function setNickname($nickname): void

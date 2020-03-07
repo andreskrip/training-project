@@ -69,7 +69,7 @@ abstract class ActiveRecordEntity implements \JsonSerializable
         return $entries ? $entries : null;
     }
 
-    //Вывод всех комментариев определенного пользователя
+    // вывод всех комментариев определенного пользователя
     public static function getCommentsByUserId(int $userId): ?array
     {
         $db = Db::getInstance();
@@ -81,7 +81,7 @@ abstract class ActiveRecordEntity implements \JsonSerializable
         return $entries ? $entries : null;
     }
 
-    //переименование имен свойств объекта для добавления/обновления данных в бд
+    // переименование имен свойств объекта для добавления/обновления данных в бд
     private function mapPropertiesToDbFormat(): array
     {
         $reflector = new \ReflectionObject($this);
@@ -193,25 +193,20 @@ abstract class ActiveRecordEntity implements \JsonSerializable
     }
 
     // форматирование времени из бд в корректный вид
-    private function getCorrectDateTime(int $commentId, string $columnName): string
+    protected function getCorrectDateTime(string $columnName = 'created_at'): self
     {
         $sql = "SET lc_time_names = 'ru_RU'";
-        $sql2 = 'SELECT DATE_FORMAT(' . $columnName . ',"%d %M %Y в %H:%i") AS created_at
+        $sql2 = 'SELECT DATE_FORMAT(' . $columnName . ',"%d %M %Y в %H:%i") AS ' . $columnName . '
                 FROM `' . static::getTableName() . '`
                 WHERE id =:id';
 
         $db = Db::getInstance();
         $db->query($sql, [], static::class);
-        $correctDateTime = $db->query($sql2, [':id' => $commentId], static::class);
-        return $correctDateTime[0]->getCreatedAt();
+        $correctDateTime = $db->query($sql2, [':id' => $this->getId()], static::class);
+        return $correctDateTime[0];
     }
 
-    // корректный вывод поля created_at
-    public function getCorrectCreatedAt(): string
-    {
-        return static::getCorrectDateTime($this->getId(), 'created_at');
-    }
-
+    // преобразование объектов в JSON формат
     public function jsonSerialize()
     {
         return $this->mapPropertiesToDbFormat();

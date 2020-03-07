@@ -1,5 +1,5 @@
 {
-  "name": "andreskrip/webshake.kek",
+  "name": "andreskrip/training-project",
   "type": "project",
   "license": "proprietary",
   "authors": [
@@ -14,7 +14,6 @@
     }
   },
   "require": {
-    "erusev/parsedown": "^1.7",
-    "ext-mbstring": "*"
+    "erusev/parsedown": "^1.7"
   }
 }

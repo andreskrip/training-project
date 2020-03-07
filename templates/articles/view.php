@@ -1,7 +1,7 @@
 <?php include __DIR__ . '/../header.php'; ?>
 <h1><?= $article->getName() ?></h1>
 <h3>Автор: <?= $article->getAuthor()->getNickname() ?></h3>
-<span><?= $article->getCorrectCreatedAt() ?></span><br>
+<span><?= $article->getCreatedAt() ?></span><br>
 <?php if ($user !== null && $user->isAdmin()): ?>
     <a href="/articles/<?= $article->getId() ?>/edit">Редактировать</a> |
     <a href="/articles/<?= $article->getId() ?>/delete">Удалить</a>
@@ -27,7 +27,7 @@
             <div id="comment<?= $comment->getId() ?>" class="comment">
                 <div class="comment-header">
                     <span class="comment-author"><?= $comment->getAuthor() ?></span>
-                    <span><?= $comment->getCorrectCreatedAt($comment) ?></span>
+                    <span><?= $comment->getCreatedAt($comment) ?></span>
                     <?php if ($user !== null && ($user->getId() === $comment->getUserId() || $user->isAdmin())): ?>
                         <a class="icon icon-delete"
                            href="/articles/<?= $article->getId() ?>/comments/<?= $comment->getId() ?>/delete"

@@ -7,7 +7,7 @@
     <a href="/account/edit">Редактировать аккаунт</a>
 
     <p>Твой e-mail: <?= $user->getEmail() ?></p>
-    <p>Ты на сайте с <?= $user->getCorrectCreatedAt() ?></p>
+    <p>Ты на сайте с <?= $user->getCreatedAt() ?></p>
 
 
 <?php if ($user->isAdmin()): ?>
@@ -39,7 +39,7 @@
                                href="/articles/<?= $article->getId() ?>/edit"
                                title="Редактировать">🖉</a>
                         </div>
-                        <span><?= $article->getCorrectCreatedAt() ?></span>
+                        <span><?= $article->getCreatedAt() ?></span>
                         <p><?= $article->getShortText() ?></p>
                         <hr>
                     </div>
@@ -56,7 +56,7 @@
                             <div class="comment-header">
                     <span class="comment-author">В статье <a
                                 href="/articles/<?= $comment->getArticleId() ?>"><?= $comment->getArticleName($comment->getArticleId()) ?></a></span>
-                                <span><?= $comment->getCorrectCreatedAt() ?></span>
+                                <span><?= $comment->getCreatedAt() ?></span>
                                 <?php if ($user->getId() === $comment->getUserId() || $user->isAdmin()): ?>
                                     <a class="icon icon-delete"
                                        href="/articles/<?= $comment->getArticleId() ?>/comments/<?= $comment->getId() ?>/delete"
@@ -89,7 +89,7 @@
                     <div class="comment-header">
                     <span class="comment-author">В статье <a
                                 href="/articles/<?= $comment->getArticleId() ?>"><?= $comment->getArticleName($comment->getArticleId()) ?></a></span>
-                        <span><?= $comment->getCorrectCreatedAt($comment) ?></span>
+                        <span><?= $comment->getCreatedAt($comment) ?></span>
                         <?php if ($user->getId() === $comment->getUserId() || $user->isAdmin()): ?>
                             <a class="icon icon-delete"
                                href="/articles/<?= $comment->getArticleId() ?>/comments/<?= $comment->getId() ?>/delete"
