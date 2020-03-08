@@ -37,7 +37,7 @@ class Article extends ActiveRecordEntity
     public function getShortText(): string
     {
         $parser = new \Parsedown();
-        return $parser->text(mb_strimwidth($this->text, 0, 200));
+        return $parser->text(mb_substr($this->text, 0, 200));
     }
 
     public function setText(string $text): void
