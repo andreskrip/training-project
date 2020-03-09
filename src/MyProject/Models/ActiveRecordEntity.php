@@ -2,50 +2,48 @@
 
 namespace MyProject\Models;
 
-use MyProject\Models\Comments\Comment;
 use MyProject\Services\Db;
 
 abstract class ActiveRecordEntity implements \JsonSerializable
 {
-
     protected $id;
 
-    //получение id нужного объекта
+    // получение id нужного объекта
     public function getId(): int
     {
         return $this->id;
     }
 
-    //имя таблицы бд, соответствующей нужному объекту
+    // имя таблицы бд, соответствующей нужному объекту
     abstract protected static function getTableName(): string;
 
-    //переименование имен_столбцов в именаСвойств объектов при экспорте из бд
+    // переименование имен_столбцов в именаСвойств объектов при экспорте из бд
     public function __set(string $name, $value)
     {
         $camelCaseName = $this->underscoreToCamelCase($name);
         $this->$camelCaseName = $value;
     }
 
-    //переименование camelCase в нижнее_подчеркивание
+    // переименование camelCase в нижнее_подчеркивание
     private function camelCaseToUnderscore(string $source): string
     {
         return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $source));
     }
 
-    //переименование нижнего_подчеркивания в camelCase
+    // переименование нижнего_подчеркивания в camelCase
     private function underscoreToCamelCase(string $source): string
     {
         return lcfirst(str_replace('_', '', ucwords($source, '_')));
     }
 
-    //вывод содержимого таблицы соответствующего объекта
+    // вывод содержимого таблицы соответствующего объекта
     public static function findAll(): ?array
     {
         $db = Db::getInstance();
         return $db->query('SELECT * FROM `' . static::getTableName() . '`;', [], static::class);
     }
 
-    //вывод полной записи из таблицы соответствующего объекта по id
+    // вывод полной записи из таблицы соответствующего объекта по id
     public static function getById(int $id): ?self
     {
         $db = Db::getInstance();
@@ -57,7 +55,7 @@ abstract class ActiveRecordEntity implements \JsonSerializable
         return $entities ? $entities[0] : null;
     }
 
-    //Вывод всех комментариев, отфильтрованных по article_id
+    // вывод всех комментариев, относящихся к определенному article_id
     public static function getCommentsByArticleId(int $articleId): ?array
     {
         $db = Db::getInstance();
@@ -76,12 +74,12 @@ abstract class ActiveRecordEntity implements \JsonSerializable
         $entries = $db->query(
             'SELECT * FROM `' . static::getTableName() . '` WHERE user_id=:userId;',
             [':userId' => $userId],
-            Comment::class
+            static::class
         );
         return $entries ? $entries : null;
     }
 
-    // переименование имен свойств объекта для добавления/обновления данных в бд
+    // получение всех имен свойств объекта и приведение их в нужный формат для добавления/обновления данных в бд
     private function mapPropertiesToDbFormat(): array
     {
         $reflector = new \ReflectionObject($this);
@@ -95,7 +93,7 @@ abstract class ActiveRecordEntity implements \JsonSerializable
         return $mappedProperties;
     }
 
-    //выбор операции для сохранения данных в бд
+    // выбор операции для сохранения данных в бд
     public function save(): void
     {
         $mappedProperties = $this->mapPropertiesToDbFormat();
@@ -106,7 +104,7 @@ abstract class ActiveRecordEntity implements \JsonSerializable
         }
     }
 
-    //подготовка данных для обновления в бд
+    // подготовка данных для обновления в бд
     private function update(array $mappedProperties): void
     {
         $columns2params = [];
@@ -123,7 +121,7 @@ abstract class ActiveRecordEntity implements \JsonSerializable
         $db->query($sql, $params2values, static::class);
     }
 
-    //подготовка данных для добавления новой записи в таблицу бд
+    // подготовка данных для добавления новой записи в таблицу бд
     private function insert(array $mappedProperties): void
     {
         // фильтруем массив от null-значений, которые автоматически сгенерируются в бд
@@ -141,7 +139,7 @@ abstract class ActiveRecordEntity implements \JsonSerializable
             $params[$valueName] = $value;
         }
 
-        //  преваращаем массив столбцов и значений в список через запятую для SQL-запроса
+        // превращаем массив столбцов и значений в список через запятую для SQL-запроса
         $columnsViaCommas = implode(', ', $columns);
         $valuesViaCommas = implode(', ', $values);
 
@@ -153,7 +151,7 @@ abstract class ActiveRecordEntity implements \JsonSerializable
         $this->refresh();
     }
 
-    //заполнение недостающих свойств нового объекта при добавлении
+    // заполнение недостающих свойств нового объекта при добавлении
     private function refresh(): void
     {
         $objectFromDb = static::getById($this->id);
@@ -162,7 +160,7 @@ abstract class ActiveRecordEntity implements \JsonSerializable
         }
     }
 
-    //подготовка запроса на удаление строки из бд по id
+    // подготовка запроса на удаление строки из бд по id
     public function delete(): void
     {
         $db = Db::getInstance();
@@ -170,14 +168,14 @@ abstract class ActiveRecordEntity implements \JsonSerializable
         $this->id = null;
     }
 
-    //удаление всех комментариев, относящихся к определенной статье
+    // удаление всех комментариев, относящихся к определенной статье
     public static function deleteComments($articleId): void
     {
         $db = Db::getInstance();
         $db->query('DELETE FROM `' . static::getTableName() . '` WHERE article_id = :article_id;', [':article_id' => $articleId]);
     }
 
-    //поиск и вывод записи с определенным значением отпределенного столбца
+    // поиск и вывод записи с определенным значением отпределенного столбца
     public static function findByOneColumn(string $columnName, $value): ?self
     {
         $db = Db::getInstance();
