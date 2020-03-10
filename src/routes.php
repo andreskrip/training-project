@@ -7,6 +7,8 @@ return [
     '~^account/edit/?$~' => [\MyProject\Controllers\UsersController::class, 'editAccount'],
     //пользователи
     '~^users/register$~' => [\MyProject\Controllers\UsersController::class, 'signUp'],
+    '~^users/recover$~' => [\MyProject\Controllers\UsersController::class, 'recover'],
+    '~^users/(\d+)/newpassword/(.+)$~' => [\MyProject\Controllers\UsersController::class, 'newPassword'],
     '~^users/(\d+)/activate/(.+)$~' => [\MyProject\Controllers\UsersController::class, 'activate'],
     '~^users/login/?$~' => [\MyProject\Controllers\UsersController::class, 'login'],
     '~^users/logout/?$~' => [\MyProject\Controllers\UsersController::class, 'logout'],

@@ -9,6 +9,7 @@ use MyProject\Models\Articles\Article;
 use MyProject\Models\Comments\Comment;
 use MyProject\Models\Users\User;
 use MyProject\Models\Users\UserActivationService;
+use MyProject\Models\Users\UserRecoverService;
 use MyProject\Services\EmailSender;
 use MyProject\Services\UsersAuthService;
 
@@ -120,5 +121,64 @@ class UsersController extends AbstractController
             }
         }
         $this->view->renderHtml('users/editAccount.php', []);
+    }
+
+    // восстановление пароля
+    public function recover(): void
+    {
+        if (!empty($_POST)) {
+            try {
+                $user = User::recover($_POST);
+            } catch (InvalidArgumentException $e) {
+                $this->view->renderHtml('users/recoverPassword.php', ['error' => $e->getMessage()]);
+                return;
+            }
+            if ($user instanceof User) {
+                $code = UserRecoverService::createRecoveryCode($user);
+
+                EmailSender::send($user, 'Восстановление пароля', 'userRecover.php', [
+                    'userId' => $user->getId(),
+                    'code' => $code
+                ]);
+                $this->view->renderHtml('users/recoverSuccessful.php');
+                return;
+            }
+        }
+        $this->view->renderHtml('users/recoverPassword.php');
+    }
+
+    // проверка и подтверждение нового пароля
+    public function newPassword(int $userId, string $recoveryCode): void
+    {
+        $user = User::getById($userId);
+
+        if ($user === null) {
+            throw new ActivationException('Пользователь не найден');
+        }
+
+        $isCodeValid = UserRecoverService::checkRecoveryCode($user, $recoveryCode);
+
+        if (!$isCodeValid) {
+            throw new ActivationException('Неверный код восстановления');
+        }
+        if (!empty($_POST)) {
+            try {
+                $user->newPassword($_POST);
+            } catch (InvalidArgumentException $e) {
+                $this->view->renderHtml('users/newPassword.php', [
+                    'error' => $e->getMessage(),
+                    'userId' => $userId,
+                    'recoveryCode' => $recoveryCode
+                ]);
+                return;
+            }
+            $this->view->renderHtml('users/newPasswordSuccessful.php');
+            UserRecoverService::deleteRecoveryCode($userId);
+            return;
+        }
+        $this->view->renderHtml('users/newPassword.php', [
+            'userId' => $userId,
+            'recoveryCode' => $recoveryCode
+        ]);
     }
 }

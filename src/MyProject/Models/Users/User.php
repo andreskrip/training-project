@@ -119,9 +119,9 @@ class User extends ActiveRecordEntity
         if (empty($loginData['email'])) {
             throw new InvalidArgumentException('Не введен email');
         }
-        // if (empty($loginData['password'])) {
-        // throw new InvalidArgumentException('Не введен пароль');
-        // }
+        if (empty($loginData['password'])) {
+            throw new InvalidArgumentException('Не введен пароль');
+        }
 
         $user = User::findByOneColumn('email', $loginData['email']);
         if ($user === null) {
@@ -187,5 +187,36 @@ class User extends ActiveRecordEntity
         $this->save();
 
         return $this;
+    }
+
+    public function newPassword($userData): User
+    {
+        if (empty ($userData['password'])) {
+            throw new InvalidArgumentException('Пароль не введен');
+        }
+        if (mb_strlen($userData['password']) < 8) {
+            throw new InvalidArgumentException('Пароль должен быть не менее 8 символов');
+        }
+        if ($userData['password'] !== $userData['repeatPassword']) {
+            throw new InvalidArgumentException('Пароли не совпадают');
+        }
+        $this->passwordHash = password_hash($userData['password'], PASSWORD_DEFAULT);
+        $this->save();
+        return $this;
+    }
+
+    public static function recover(array $data)
+    {
+        if (empty($data['email'])) {
+            throw new InvalidArgumentException('Не введен email');
+        }
+        if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+            throw new InvalidArgumentException('Email не корректен');
+        }
+        $user = User::findByOneColumn('email', $data['email']);
+        if ($user === null) {
+            throw new InvalidArgumentException('Нет пользователя с таким email');
+        }
+        return $user;
     }
 }
