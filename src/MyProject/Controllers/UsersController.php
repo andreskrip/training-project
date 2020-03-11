@@ -9,7 +9,7 @@ use MyProject\Models\Articles\Article;
 use MyProject\Models\Comments\Comment;
 use MyProject\Models\Users\User;
 use MyProject\Models\Users\UserActivationService;
-use MyProject\Models\Users\UserRecoverService;
+use MyProject\Models\Users\UserResetService;
 use MyProject\Services\EmailSender;
 use MyProject\Services\UsersAuthService;
 
@@ -19,6 +19,7 @@ class UsersController extends AbstractController
     // регистрация на сайте
     public function signUp(): void
     {
+        // проверяем корректность введеных данных
         if (!empty($_POST)) {
             try {
                 $user = User::signUp($_POST);
@@ -27,16 +28,18 @@ class UsersController extends AbstractController
                 return;
             }
 
-            if ($user instanceof User) {
-                $code = UserActivationService::createActivationCode($user);
+            // создаем код активации пользователя
+            $code = UserActivationService::createActivationCode($user);
 
-                EmailSender::send($user, 'Активация', 'userActivation.php', [
-                    'userId' => $user->getId(),
-                    'code' => $code
-                ]);
-                $this->view->renderHtml('users/signUpSuccessful.php');
-                return;
-            }
+            // и отсылаем его на почту пользователя
+            EmailSender::send($user, 'Активация', 'userActivation.php', [
+                'userId' => $user->getId(),
+                'code' => $code
+            ]);
+
+            // если все прошло успешно - выводим сообщение об успехе
+            $this->view->renderHtml('users/signUpSuccessful.php');
+            return;
         }
         $this->view->renderHtml('users/signUp.php');
     }
@@ -44,6 +47,7 @@ class UsersController extends AbstractController
     // активация учетной записи по email
     public function activate(int $userId, string $activationCode): void
     {
+        // проверяем существование пользователя
         $user = User::getById($userId);
 
         if ($user === null) {
@@ -53,13 +57,19 @@ class UsersController extends AbstractController
             throw new ActivationException('Пользователь уже подтвержден');
         }
 
+        // проверяем код активации из письма с кодом активации в бд
         $isCodeValid = UserActivationService::checkActivationCode($user, $activationCode);
-
         if (!$isCodeValid) {
             throw new ActivationException('Неверный код активации');
         }
+
+        // если все проверки пройдены - активируем пользователя
         $user->activate();
+
+        // выводим сообщение об успешной активации
         $this->view->renderHtml('users/activationSuccessful.php');
+
+        // удаляем код активации из бд
         UserActivationService::deleteActivationCode($userId);
     }
 
@@ -106,6 +116,7 @@ class UsersController extends AbstractController
         $this->view->renderHtml('users/account.php', []);
     }
 
+    // редактирование профиля
     public function editAccount(): void
     {
 
@@ -123,44 +134,56 @@ class UsersController extends AbstractController
         $this->view->renderHtml('users/editAccount.php', []);
     }
 
-    // восстановление пароля
-    public function recover(): void
+    // заявка на сброс пароля
+    public function resetPassword(): void
     {
+        // если пользователь авторизован - перенаправлять на главную
+        if ($this->user !== null) {
+            header('Location: /');
+            exit();
+        }
+
+        // проверяем корректность введенного e-mail
         if (!empty($_POST)) {
             try {
-                $user = User::recover($_POST);
+                $user = User::validateResetPassword($_POST);
             } catch (InvalidArgumentException $e) {
-                $this->view->renderHtml('users/recoverPassword.php', ['error' => $e->getMessage()]);
+                $this->view->renderHtml('users/resetPassword.php', ['error' => $e->getMessage()]);
                 return;
             }
-            if ($user instanceof User) {
-                $code = UserRecoverService::createRecoveryCode($user);
 
-                EmailSender::send($user, 'Восстановление пароля', 'userRecover.php', [
-                    'userId' => $user->getId(),
-                    'code' => $code
-                ]);
-                $this->view->renderHtml('users/recoverSuccessful.php');
-                return;
-            }
+            // создаем код сброса
+            $code = UserResetService::createResetCode($user);
+
+            // отправляем код сброса на почту
+            EmailSender::send($user, 'Сброс пароля на ' . $_SERVER['HTTP_HOST'], 'userReset.php', [
+                'userId' => $user->getId(),
+                'userNickname' => $user->getNickname(),
+                'code' => $code
+            ]);
+
+            // если все прошло успешно - выводим сообщение с успехом
+            $this->view->renderHtml('users/resetSuccessful.php');
+            return;
         }
-        $this->view->renderHtml('users/recoverPassword.php');
+        $this->view->renderHtml('users/resetPassword.php');
     }
 
     // проверка и подтверждение нового пароля
     public function newPassword(int $userId, string $recoveryCode): void
     {
+        // ищем пользователя по id
         $user = User::getById($userId);
-
         if ($user === null) {
             throw new ActivationException('Пользователь не найден');
         }
 
-        $isCodeValid = UserRecoverService::checkRecoveryCode($user, $recoveryCode);
-
+        // проверяем код сброса из базы с кодом сброса из письма
+        $isCodeValid = UserResetService::checkResetCode($user, $recoveryCode);
         if (!$isCodeValid) {
             throw new ActivationException('Неверный код восстановления');
         }
+        // устанавливаем новый пароль
         if (!empty($_POST)) {
             try {
                 $user->newPassword($_POST);
@@ -172,8 +195,11 @@ class UsersController extends AbstractController
                 ]);
                 return;
             }
+            // если проверки прошли успешно и пароль установлен - выводим сообщение об успехе
             $this->view->renderHtml('users/newPasswordSuccessful.php');
-            UserRecoverService::deleteRecoveryCode($userId);
+
+            // удаляем код сброса из бд
+            UserResetService::deleteResetCode($userId);
             return;
         }
         $this->view->renderHtml('users/newPassword.php', [

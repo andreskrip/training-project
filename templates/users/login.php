@@ -9,7 +9,7 @@
             <br><br>
             <label>Пароль <input type="password" name="password" value="<?= $_POST['password'] ?? '' ?>"></label>
             <br><br>
-            <a href="/users/recover">Воссстановить пароль</a>
+            <a href="/users/reset">Забыли пароль?</a>
             <br><br>
             <input type="submit" value="Войти">
         </form>

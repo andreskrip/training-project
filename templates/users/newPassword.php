@@ -4,10 +4,12 @@
         <?php if (!empty($error)): ?>
             <div style="background-color: red;padding: 5px;margin: 15px"><?= $error ?></div>
         <?php endif; ?>
-        <form action="/users/<?= $userId ?>/newpassword/<?= $recoveryCode ?>" method="post">
-            <label>Пароль <input type="password" name="password"></label>
+        <form action="/users/<?= $userId ?>/reset/<?= $recoveryCode ?>" method="post">
+            <label for="password">Пароль</label><br>
+            <input type="password" name="password">
             <br><br>
-            <label>Повторите пароль <input type="password" name="repeatPassword"></label>
+            <label for="repeatPassword">Повторите пароль</label><br>
+            <input type="password" name="repeatPassword">
             <br><br>
             <input type="submit" value="Подтвердить новый пароль">
         </form>

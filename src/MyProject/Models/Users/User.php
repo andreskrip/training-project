@@ -189,6 +189,22 @@ class User extends ActiveRecordEntity
         return $this;
     }
 
+    // проверка e-mail для сброса пароля
+    public static function validateResetPassword(array $userData): User
+    {
+        if (empty($userData['email'])) {
+            throw new InvalidArgumentException('Не введен email');
+        }
+        if (!filter_var($userData['email'], FILTER_VALIDATE_EMAIL)) {
+            throw new InvalidArgumentException('Email не корректен');
+        }
+        $user = User::findByOneColumn('email', $userData['email']);
+        if ($user === null) {
+            throw new InvalidArgumentException('Нет пользователя с таким email');
+        }
+        return $user;
+    }
+
     public function newPassword($userData): User
     {
         if (empty ($userData['password'])) {
@@ -203,20 +219,5 @@ class User extends ActiveRecordEntity
         $this->passwordHash = password_hash($userData['password'], PASSWORD_DEFAULT);
         $this->save();
         return $this;
-    }
-
-    public static function recover(array $data)
-    {
-        if (empty($data['email'])) {
-            throw new InvalidArgumentException('Не введен email');
-        }
-        if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-            throw new InvalidArgumentException('Email не корректен');
-        }
-        $user = User::findByOneColumn('email', $data['email']);
-        if ($user === null) {
-            throw new InvalidArgumentException('Нет пользователя с таким email');
-        }
-        return $user;
     }
 }
