@@ -105,11 +105,12 @@ class UsersController extends AbstractController
             throw new UnauthorizedException();
         }
 
-        //передаем обратный порядок комментариев и статей, чтобы первыми показывались самые свежие
-        if (Comment::getCommentsByUserId($this->user->getId()) !== null) {
-            $this->view->setVar('myComments', array_reverse(Comment::getCommentsByUserId($this->user->getId())));
+        // вывод комментариев определенного пользователя
+        if (!empty(Comment::getCommentsByUserId($this->user->getId()))) {
+            $this->view->setVar('myComments', Comment::getCommentsByUserId($this->user->getId()));
         }
-        if (Comment::findAll() !== null) {
+        //передаем обратный порядок комментариев и статей, чтобы первыми показывались самые свежие
+        if (!empty(Comment::findAll())) {
             $this->view->setVar('allComments', array_reverse(Comment::findAll()));
         }
         $this->view->setVar('articles', array_reverse(Article::findAll()));

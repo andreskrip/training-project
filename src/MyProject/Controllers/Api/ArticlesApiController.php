@@ -17,7 +17,7 @@ class ArticlesApiController extends AbstractController
             throw new NotFoundException();
         }
 
-        $this->view->displayJson(['articles' => [$article]]);
+        $this->view->displayJson(['article' => [$article]]);
     }
 
     public function create()

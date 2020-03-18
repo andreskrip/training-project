@@ -72,7 +72,7 @@ abstract class ActiveRecordEntity implements \JsonSerializable
     {
         $db = Db::getInstance();
         $entries = $db->query(
-            'SELECT * FROM `' . static::getTableName() . '` WHERE user_id=:userId;',
+            'SELECT * FROM `' . static::getTableName() . '` WHERE user_id=:userId ORDER BY `created_at` DESC;',
             [':userId' => $userId],
             static::class
         );
