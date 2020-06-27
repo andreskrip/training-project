@@ -3,10 +3,12 @@
 namespace MyProject\Services;
 
 use MyProject\Exceptions\DbException;
+use PDO;
+use PDOException;
 
 class Db
 {
-    /** @var \PDO */
+    /** @var PDO */
     private $pdo;
     private static $instance;
 
@@ -14,13 +16,13 @@ class Db
     {
         $dbOptions = (require __DIR__ . '/../../settings.php')['db'];
         try {
-            $this->pdo = new \PDO(
+            $this->pdo = new PDO(
                 'mysql:host=' . $dbOptions['host'] . ';dbname=' . $dbOptions['dbname'],
                 $dbOptions['user'],
                 $dbOptions['password']
             );
             $this->pdo->exec('SET NAMES UTF8');
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             throw new DbException('Ошибка при подключении к БД: ' . $e->getMessage());
         }
 
@@ -34,7 +36,7 @@ class Db
         if (false === $result) {
             return null;
         }
-        return $sth->fetchAll(\PDO::FETCH_CLASS, $className);
+        return $sth->fetchAll(PDO::FETCH_CLASS, $className);
     }
 
     //применение singleton на подключения к бд
