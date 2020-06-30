@@ -1,12 +1,12 @@
 <?php
 
-namespace MyProject\Services\Db;
+namespace MyProject\Cli;
 
 use MyProject\Services\Db;
 
-class TableBuilder
+class TableBuilder extends AbstractCommand
 {
-    public static function createUsersTable()
+    public function createUsersTable()
     {
         $sql = "CREATE TABLE IF NOT EXISTS `users` (
             `id` int(11) NOT NULL,
@@ -31,7 +31,7 @@ class TableBuilder
         return $db->query($sql, [], static::class);
     }
 
-    public static function createArticlesTable()
+    public function createArticlesTable()
     {
         $sql = "CREATE TABLE IF NOT EXISTS `articles` (
             `id` int(11) NOT NULL,
@@ -50,4 +50,23 @@ class TableBuilder
         $db = Db::getInstance();
         return $db->query($sql, [], static::class);
     }
+
+    protected function checkParams(): void
+    {
+        $this->ensureParamExists('table');
+    }
+
+    public function execute(): void
+    {
+        $tableName = $this->getParam('table');
+        $method = 'create' . $tableName . 'Table';
+        $result = $this->$method();
+        if ($result === null) {
+            echo 'Ошибка!' . PHP_EOL;
+        } else {
+            echo 'Успешно!' . PHP_EOL;
+        }
+    }
+
+
 }
